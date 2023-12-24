@@ -5,6 +5,6 @@ pydeck
 streamlit
 matplotlib
 scikit-learn
-PIL
+pillow
 io
 renishawWiRE
