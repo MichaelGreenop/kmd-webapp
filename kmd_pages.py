@@ -360,14 +360,22 @@ def page3():
 
                                 # Save the figure to a file
                                 name = st.text_input("Enter the filename (with extension):")
-                                save_button = st.button("Save Figure")
-       
+                                
+                                def download_button(plot, filename, button_text='Download Plot'):
+                                    # Save the plot to a BytesIO buffer
+                                    buf = BytesIO()
+                                    plot.savefig(buf, format='png')
+                                    buf.seek(0)
 
-                                if save_button:
+                                    # Create a download button
+                                    st.download_button(label=button_text, data=buf, file_name=filename, key='download_button')
+
+                                
+                                if len(name) > 0: 
+
+                                    # Call the download_button function
+                                    download_button(fig, name)
                                                                       
-                                    
-
-                                    fig.savefig(name, bbox_inches='tight', dpi=200)
                                     st.success(f"Figure saved as {name}")
 
                 except Exception as e:
