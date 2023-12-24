@@ -250,8 +250,8 @@ def page3():
 
 
 
-    Start = ''
-    End = ''
+    #Start = ''
+    #End = ''
 
     Start = st.text_input("Range start: ")
     End = st.text_input("Range end: ")
