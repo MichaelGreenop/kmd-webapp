@@ -59,6 +59,7 @@ def home_page():
         Page 2: Compare clusters\n
         Page 3: Produce layers\n
         Page 4: Combine layers\n
+        Page 5: Add colour ranges\n
              """)
         
 
@@ -142,7 +143,8 @@ def page1():
 
         except Exception as e:
             st.error(f"Error reading the WDF file: {e}")
-    
+
+
 def page2():
 
 
@@ -234,8 +236,6 @@ def page2():
 
         except Exception as e:
             st.error(f"Error reading the WDF file: {e}")
-
-
 
 
 def page3():
@@ -348,11 +348,18 @@ def page3():
 
 
                                 # Plot the clusters array using plt.imshow()
+                                from mpl_toolkits.axes_grid1 import make_axes_locatable
+                                
                                 fig, ax0 = plt.subplots(figsize=(8, 6))
+                                divider = make_axes_locatable(ax0)
+                                cax = divider.append_axes('right', size='5%', pad=0.05)
 
                                 # Plot clusters_array with colorbar
-                                ax0.imshow(img, cmap=selected_cmap, interpolation='quadric', aspect='auto')
+                                im = ax0.imshow(img, cmap=selected_cmap, interpolation='quadric', aspect='auto')
                                 ax0.grid(False)
+                                ax0.axes.xaxis.set_visible(False)
+                                ax0.axes.yaxis.set_visible(False)
+                                fig.colorbar(im, cax=cax, orientation='vertical')
                                 
 
                                 st.write(fig)
@@ -360,7 +367,9 @@ def page3():
 
                                 # Save the figure to a file
                                 name = st.text_input("Enter the filename (with extension):")
-                                
+                                #save_button = st.button("Save Figure")
+
+
                                 def download_button(plot, filename, button_text='Download Plot'):
                                     # Save the plot to a BytesIO buffer
                                     buf = BytesIO()
@@ -370,7 +379,11 @@ def page3():
                                     # Create a download button
                                     st.download_button(label=button_text, data=buf, file_name=filename, key='download_button')
 
+                             
+
                                 
+       
+
                                 if len(name) > 0: 
 
                                     # Call the download_button function
@@ -380,11 +393,10 @@ def page3():
 
                 except Exception as e:
                     st.error(f"Error reading the WDF file: {e}")
+             
 
-                
-                
 
-    
+
 def page4():
 
     # Tasks:
@@ -403,14 +415,19 @@ def page4():
     # Upload the second PNG image
     uploaded_image2 = st.file_uploader("Choose the second PNG image", type=["png"])
 
+    # Save the figure to a file
+    name1 = st.text_input("Enter the filename (with extension):")
+
     # Button to make black pixels in the first image transparent
     make_transparent_button = st.button("Combine the images")
 
+    
+
     # Check if both images are uploaded and the button is pressed
-    if uploaded_image1 is not None and uploaded_image2 is not None and make_transparent_button:
+    if uploaded_image1 is not None and uploaded_image2 is not None and make_transparent_button is not None and len(name1) > 0:
         # Convert the uploaded images to PIL Images
-        pil_image1 = Image.open(uploaded_image1)
-        pil_image2 = Image.open(uploaded_image2)
+        pil_image1 = Image.open(uploaded_image1).crop((101, 53, 687, 550))
+        pil_image2 = Image.open(uploaded_image2).crop((101, 53, 687, 550))
 
 
 
@@ -455,21 +472,115 @@ def page4():
         st.image([final_image], 
                 caption=["Combined Img"],
                 use_column_width=True)
+
     
-        CI = pil_image2.copy()
-        CI.paste(transparent_image1, (0, 0), transparent_image1)
-        buf = BytesIO()
-        CI.save(buf, format="png")
-        byte_im = buf.getvalue()
-    
+        def download_button2(plot1, filename1, button_text='Download Plot'):
+            # Save the plot to a BytesIO buffer
+            buf1 = BytesIO()
+            plot1.save(buf1, 'png')
+            buf1.seek(0)
+
+                                    # Create a download button
+            st.download_button(label=button_text, data=buf1, file_name=filename1, key='download_button')
+                
+ 
+            
+
+        download_button2(final_image, name1)
+        st.success(f"Figure saved as {name1}")
+            
+
+def page5():
 
 
-        btn = st.download_button(
-            label="Download Image",
-            data=byte_im,
-            file_name="combined_map.png",
-            mime="image/png",
-            )
+    st.markdown("Page 5: Add colour ranges")
+    st.sidebar.markdown("Page 5: Add colour ranges")
+
+    st.write("""
+    The combined map produced on the previous page now requires the \n
+    colour ranges to be added. 
+    """)
+    # Upload the first PNG image
+    uploaded_image3 = st.file_uploader("Choose map (PNG format)", type=["png"])
+
+    # Upload the second PNG image
+    uploaded_image4 = st.file_uploader("Choose the first colour range (PNG format)", type=["png"])
+
+    # Upload the second PNG image
+    uploaded_image5 = st.file_uploader("Choose the second colour range (PNG format)", type=["png"])
+
+    # Upload the second PNG image
+    uploaded_image6 = st.file_uploader("Choose the third colour range (PNG format)", type=["png"])
+
+    # Button to make black pixels in the first image transparent
+    combine_button = st.button("Create final figure")
+
+
+    def download_button3(final_image, filename2, button_text='Download Plot'):
+        # Save the plot to a BytesIO buffer
+        buf2= BytesIO()
+        plot2.save(buf2, 'png')
+        buf2.seek(0)
+        st.download_button(label=button_text, data=buf2, file_name=name2, key='download_button2')
+
+    # Check if both images are uploaded and the button is pressed
+    if uploaded_image3 is not None and uploaded_image4 is not None and uploaded_image5 is not None and uploaded_image6 is not None and combine_button:
+        # Convert the uploaded images to PIL Images
+        pil_image3 = Image.open(uploaded_image3).crop((101, 53, 687, 550))
+        pil_image4 = Image.open(uploaded_image4).crop((687, 53, 780, 550))
+        pil_image5 = Image.open(uploaded_image5).crop((687, 53, 780, 550))
+        pil_image6 = Image.open(uploaded_image6).crop((687, 53, 780, 550))
+
+        def combine_images(image1, image2, image3, image4):
+            # Get the sizes of each image
+            width3, height3 = pil_image3.size
+            width4, height4 = pil_image4.size
+            width5, height5 = pil_image5.size
+            width6, height6 = pil_image6.size
+
+            # Determine the size of the combined image
+            combined_width = width3 + width4 + width5 + width6
+            combined_height = height3 + height4 + height5 + height6
+
+            # Create a new image with the determined size
+            combined_image = Image.new('RGB', (combined_width, combined_height))
+
+            # Paste each image onto the combined image
+            combined_image.paste(pil_image3, (0, 0))
+            combined_image.paste(pil_image4, (width3, 0))
+            combined_image.paste(pil_image5, (width3 + width4, 0))
+            combined_image.paste(pil_image6, (width3+width4+width5, 0))
+            
+            return combined_image
+
+
+        final_image2 = combine_images(pil_image3, pil_image4, pil_image5, pil_image6)
+
+        # Display the final image
+        st.image([final_image2], 
+                caption=["Final Img"],
+                use_column_width=True)
+
+        #if len(final_image) > 0:
+         #   st.write(type(final_image))
+
+          #  name2 = st.text_input("Enter the filename (with extension):")
+
+
+            
+
+           # if len(name2) > 0:
+            #    st.write(name2)
+               # final_image = combine_images(pil_image3, pil_image4, pil_image5, pil_image6)
+                #download_button3(final_image, name2)
+                #st.success(f"Figure saved as {name2}")
+                
+                
+        
+
+        
+
+        
 
 
 page_names_to_funcs = {  
@@ -481,6 +592,7 @@ page_names_to_funcs = {
     "Page 2: Compare clusters": page2, 
     "Page 3: Produce layers": page3,
     "Page 4: Combine layers": page4,
+    "Page 5: Add colour ranges": page5,
     }
 
 selected_page = st.sidebar.selectbox("Select a page", page_names_to_funcs.keys())
