@@ -540,7 +540,7 @@ def page5():
 
             # Determine the size of the combined image
             combined_width = width3 + width4 + width5 + width6
-            combined_height = height3 + height4 + height5 + height6
+            combined_height = height3
 
             # Create a new image with the determined size
             combined_image = Image.new('RGB', (combined_width, combined_height))
