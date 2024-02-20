@@ -389,7 +389,7 @@ def page3():
                                     # Call the download_button function
                                     download_button(fig, name)
                                                                       
-                                    st.success(f"Figure saved as {name}")
+                                    st.success(f"Press the download button to save: {name}")
 
                 except Exception as e:
                     st.error(f"Error reading the WDF file: {e}")
@@ -487,7 +487,7 @@ def page4():
             
 
         download_button2(final_image, name1)
-        st.success(f"Figure saved as {name1}")
+        st.success(f"Press the download button to save: {name1}")
             
 
 def page5():
@@ -540,7 +540,7 @@ def page5():
 
             # Determine the size of the combined image
             combined_width = width3 + width4 + width5 + width6
-            combined_height = height3
+            combined_height = height3# + height4 + height5 + height6
 
             # Create a new image with the determined size
             combined_image = Image.new('RGB', (combined_width, combined_height))
